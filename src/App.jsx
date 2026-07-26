@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
+import { Routes, Route, Link, useNavigate, useParams, useLocation } from 'react-router-dom'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination, Autoplay } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import {
-  heroVideo, heroPoster, campuses, uniStats, uniRegions, uniList,
+  heroVideo, heroPoster, campuses, campusBySlug, uniStats, uniRegions, uniList,
   skills, community, testimonials, avatars, introImg, footerLinks,
 } from './data.js'
 import { initAnimations } from './anim.js'
@@ -13,30 +14,35 @@ import { initAnimations } from './anim.js'
 /* ---------- logo ---------- */
 function Logo({ light }) {
   return (
-    <a href="#top" className={`logo ${light ? 'logo--light' : ''}`} aria-label="Fairview International School">
+    <Link to="/" className={`logo ${light ? 'logo--light' : ''}`} aria-label="Fairview International School">
       <img
         className="logo__img"
         src={light ? '/fairview-logo-white.png' : '/fairview-logo.png'}
         alt="Fairview International School"
       />
-    </a>
+    </Link>
   )
 }
 
 /* ---------- header ---------- */
 function Header() {
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const slug = pathname.startsWith('/campus/') ? pathname.split('/')[2] : '' // reflect current campus
   return (
     <header className="header" id="top">
       <div className="container">
         <div className="header__inner">
           <Logo />
           <div className="header__school">
-            <select defaultValue="" aria-label="Choose a school">
+            {/* the school selector — choosing a campus opens its own page */}
+            <select value={slug || ''} aria-label="Choose a school"
+              onChange={e => { if (e.target.value) navigate(`/campus/${e.target.value}`) }}>
               <option value="" disabled>Please choose a school</option>
-              {campuses.map(c => <option key={c.name}>{c.name}</option>)}
+              {campuses.map(c => <option key={c.slug} value={c.slug}>{c.name}</option>)}
             </select>
           </div>
-          <a href="#enquire" className="btn-pill">Enquire now</a>
+          <Link to="/#enquire" className="btn-pill">Enquire now</Link>
         </div>
       </div>
     </header>
@@ -112,7 +118,7 @@ function Campus() {
                     <span className="campus-card__age">{c.ages}</span>
                     {c.tags.map(t => <span key={t} className="chip">{t}</span>)}
                   </div>
-                  <a href="#" className="campus-card__more">More details</a>
+                  <Link to={`/campus/${c.slug}`} className="campus-card__more">More details</Link>
                 </div>
               </article>
             </div>
@@ -365,7 +371,7 @@ function Footer() {
             <h4>Contact info</h4>
             <p className="footer__phone"><a href="tel:+60341420888">+603-4142 0888</a></p>
             <p className="footer__phone"><a href="mailto:enquiries@fairview.edu.my">enquiries@fairview.edu.my</a></p>
-            <a href="#enquire" className="btn-pill btn-pill--sm">Enquire now</a>
+            <Link to="/#enquire" className="btn-pill btn-pill--sm">Enquire now</Link>
           </div>
         </div>
         <div className="footer__bar">
@@ -377,24 +383,128 @@ function Footer() {
   )
 }
 
+/* ---------- home page ---------- */
+function Home() {
+  return (
+    <main>
+      <Hero />
+      <Intro />
+      <Campus />
+      <University />
+      <Voices />
+      <Skills />
+      <Community />
+      <Enquire />
+    </main>
+  )
+}
+
+/* ---------- per-campus location page ---------- */
+function LocationPage() {
+  const { slug } = useParams()
+  const c = campusBySlug(slug)
+  if (!c) {
+    return (
+      <main className="loc">
+        <div className="container loc__notfound">
+          <h1>Campus not found</h1>
+          <p>Sorry, we couldn’t find that campus.</p>
+          <Link to="/" className="btn-pill">Back to home</Link>
+        </div>
+      </main>
+    )
+  }
+  const others = campuses.filter(x => x.slug !== slug)
+  const tel = c.phone.replace(/[^\d+]/g, '')
+  return (
+    <main className="loc">
+      <section className="loc-hero" style={{ backgroundImage: `url(${c.hero})` }}>
+        <span className="loc-hero__scrim" />
+        <div className="container loc-hero__inner">
+          <Link to="/" className="loc-hero__back">← All campuses</Link>
+          <span className="loc-hero__eyebrow">{c.tags[0]}</span>
+          <h1>{c.name}</h1>
+          <p className="loc-hero__place">📍 {c.place} &nbsp;·&nbsp; {c.ages}</p>
+        </div>
+      </section>
+
+      <section className="loc-about section-pad">
+        <div className="container">
+          <div className="row g-5">
+            <div className="col-12 col-lg-7">
+              <h2 className="sec-title">About {c.name}</h2>
+              <p className="loc-about__lead">{c.blurb}</p>
+              <div className="loc-tags">{c.tags.map(t => <span key={t} className="chip">{t}</span>)}</div>
+              <ul className="loc-highlights">
+                {c.highlights.map(h => <li key={h}><span className="loc-highlights__tick">✓</span>{h}</li>)}
+              </ul>
+              <Link to="/#enquire" className="btn-pill btn-pill--lg">Enquire about this campus</Link>
+            </div>
+            <div className="col-12 col-lg-5">
+              <div className="loc-card">
+                <div className="loc-card__img"><img src={c.photo} alt={c.name} loading="lazy" /></div>
+                <div className="loc-card__body">
+                  <h3>Visit us</h3>
+                  <p className="loc-card__addr">{c.address}</p>
+                  <p className="loc-card__row"><span>Phone</span><a href={`tel:${tel}`}>{c.phone}</a></p>
+                  <p className="loc-card__row"><span>Email</span><a href={`mailto:${c.email}`}>{c.email}</a></p>
+                  <p className="loc-card__row"><span>Ages</span><strong>{c.ages}</strong></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="loc-others section-pad">
+        <div className="container">
+          <h2 className="sec-title sec-title--center">Explore other campuses</h2>
+          <div className="row g-4">
+            {others.map(o => (
+              <div className="col-12 col-md-6 col-lg-4" key={o.slug}>
+                <Link to={`/campus/${o.slug}`} className="loc-other">
+                  <div className="loc-other__img"><img src={o.photo} alt={o.name} loading="lazy" /></div>
+                  <div className="loc-other__body">
+                    <h3>{o.name}</h3>
+                    <span className="loc-other__place">📍 {o.place}</span>
+                  </div>
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </main>
+  )
+}
+
+/* scroll to top on route change (or to a #hash target if present) */
+function ScrollManager() {
+  const { pathname, hash } = useLocation()
+  useEffect(() => {
+    if (hash) {
+      const el = document.querySelector(hash)
+      if (el) { el.scrollIntoView({ behavior: 'smooth' }); return }
+    }
+    window.scrollTo(0, 0)
+  }, [pathname, hash])
+  return null
+}
+
 export default function App() {
+  const { pathname } = useLocation()
   useEffect(() => {
     const id = requestAnimationFrame(() => initAnimations())
     return () => cancelAnimationFrame(id)
-  }, [])
+  }, [pathname]) // re-run reveals/count-ups on each route
   return (
     <>
+      <ScrollManager />
       <Header />
-      <main>
-        <Hero />
-        <Intro />
-        <Campus />
-        <University />
-        <Voices />
-        <Skills />
-        <Community />
-        <Enquire />
-      </main>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/campus/:slug" element={<LocationPage />} />
+      </Routes>
       <Footer />
     </>
   )
