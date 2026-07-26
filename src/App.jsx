@@ -418,13 +418,14 @@ function LocationPage() {
   const tel = c.phone.replace(/[^\d+]/g, '')
   return (
     <main className="loc">
-      <section className="loc-hero" style={{ backgroundImage: `url(${c.hero})` }}>
+      <section className="loc-hero" style={{ '--hero': `url(${c.hero})` }}>
+        <span className="loc-hero__bg" />
         <span className="loc-hero__scrim" />
         <div className="container loc-hero__inner">
-          <Link to="/" className="loc-hero__back">← All campuses</Link>
-          <span className="loc-hero__eyebrow">{c.tags[0]}</span>
-          <h1>{c.name}</h1>
-          <p className="loc-hero__place">📍 {c.place} &nbsp;·&nbsp; {c.ages}</p>
+          <Link to="/" className="loc-hero__back" data-aos="fade-right">← All campuses</Link>
+          <span className="loc-hero__eyebrow" data-aos="fade-up">{c.tags[0]}</span>
+          <h1 data-aos="fade-up" data-aos-delay="80">{c.name}</h1>
+          <p className="loc-hero__place" data-aos="fade-up" data-aos-delay="160">📍 {c.place} &nbsp;·&nbsp; {c.ages}</p>
         </div>
       </section>
 
@@ -432,16 +433,20 @@ function LocationPage() {
         <div className="container">
           <div className="row g-5">
             <div className="col-12 col-lg-7">
-              <h2 className="sec-title">About {c.name}</h2>
-              <p className="loc-about__lead">{c.blurb}</p>
-              <div className="loc-tags">{c.tags.map(t => <span key={t} className="chip">{t}</span>)}</div>
+              <h2 className="sec-title" data-aos="fade-up">About {c.name}</h2>
+              <p className="loc-about__lead" data-aos="fade-up" data-aos-delay="60">{c.blurb}</p>
+              <div className="loc-tags" data-aos="fade-up" data-aos-delay="100">{c.tags.map(t => <span key={t} className="chip">{t}</span>)}</div>
               <ul className="loc-highlights">
-                {c.highlights.map(h => <li key={h}><span className="loc-highlights__tick">✓</span>{h}</li>)}
+                {c.highlights.map((h, i) => (
+                  <li key={h} data-aos="fade-up" data-aos-delay={120 + i * 90}>
+                    <span className="loc-highlights__tick">✓</span>{h}
+                  </li>
+                ))}
               </ul>
-              <Link to="/#enquire" className="btn-pill btn-pill--lg">Enquire about this campus</Link>
+              <Link to="/#enquire" className="btn-pill btn-pill--lg" data-aos="zoom-in">Enquire about this campus</Link>
             </div>
             <div className="col-12 col-lg-5">
-              <div className="loc-card">
+              <div className="loc-card" data-aos="fade-left" data-aos-delay="100">
                 <div className="loc-card__img"><img src={c.photo} alt={c.name} loading="lazy" /></div>
                 <div className="loc-card__body">
                   <h3>Visit us</h3>
@@ -458,15 +463,16 @@ function LocationPage() {
 
       <section className="loc-others section-pad">
         <div className="container">
-          <h2 className="sec-title sec-title--center">Explore other campuses</h2>
+          <h2 className="sec-title sec-title--center" data-aos="fade-up">Explore other campuses</h2>
           <div className="row g-4">
-            {others.map(o => (
-              <div className="col-12 col-md-6 col-lg-4" key={o.slug}>
+            {others.map((o, i) => (
+              <div className="col-12 col-md-6 col-lg-4" key={o.slug} data-aos="fade-up" data-aos-delay={(i % 3) * 100}>
                 <Link to={`/campus/${o.slug}`} className="loc-other">
                   <div className="loc-other__img"><img src={o.photo} alt={o.name} loading="lazy" /></div>
                   <div className="loc-other__body">
                     <h3>{o.name}</h3>
                     <span className="loc-other__place">📍 {o.place}</span>
+                    <span className="loc-other__go" aria-hidden>→</span>
                   </div>
                 </Link>
               </div>

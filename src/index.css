@@ -171,8 +171,10 @@ p { margin: 0; }
 .footer__bar { border-top: 1px solid rgba(255,255,255,.18); padding: 20px 0; display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; font-size: 12.5px; opacity: .85; }
 
 /* ---------- per-campus location pages ---------- */
-.loc-hero { position: relative; min-height: 48vh; display: flex; align-items: flex-end; background-size: cover; background-position: center; color: #fff; }
-.loc-hero__scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,36,62,.15), rgba(0,36,62,.8)); }
+.loc-hero { position: relative; min-height: 48vh; display: flex; align-items: flex-end; color: #fff; overflow: hidden; }
+.loc-hero__bg { position: absolute; inset: 0; z-index: 0; background: var(--hero) center/cover no-repeat; transform: scale(1.08); animation: locKenburns 16s ease-out forwards; will-change: transform; }
+@keyframes locKenburns { from { transform: scale(1.14); } to { transform: scale(1); } }
+.loc-hero__scrim { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(0,36,62,.15), rgba(0,36,62,.8)); }
 .loc-hero__inner { position: relative; z-index: 2; padding: 50px 0 46px; }
 .loc-hero__back { display: inline-block; color: #fff; font-weight: 600; font-size: 14px; opacity: .9; margin-bottom: 18px; }
 .loc-hero__back:hover { color: var(--yellow); }
@@ -183,8 +185,10 @@ p { margin: 0; }
 .loc-about__lead { font-size: 17px; color: var(--ink); margin: 14px 0 20px; max-width: 620px; line-height: 1.6; }
 .loc-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
 .loc-highlights { list-style: none; padding: 0; margin: 0 0 30px; display: grid; gap: 12px; }
-.loc-highlights li { display: flex; align-items: flex-start; gap: 12px; font-size: 15px; color: var(--ink); }
-.loc-highlights__tick { flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--mint); color: var(--green); display: grid; place-items: center; font-size: 12px; font-weight: 800; }
+.loc-highlights li { display: flex; align-items: flex-start; gap: 12px; font-size: 15px; color: var(--ink); transition: transform .25s ease; }
+.loc-highlights li:hover { transform: translateX(6px); }
+.loc-highlights__tick { flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--mint); color: var(--green); display: grid; place-items: center; font-size: 12px; font-weight: 800; transition: background .25s, color .25s, transform .25s; }
+.loc-highlights li:hover .loc-highlights__tick { background: var(--green); color: #fff; transform: scale(1.12); }
 
 .loc-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: 0 18px 40px rgba(0,0,0,.06); position: sticky; top: 96px; }
 .loc-card__img { aspect-ratio: 16/10; overflow: hidden; }
@@ -203,13 +207,19 @@ p { margin: 0; }
 .loc-other__img { aspect-ratio: 16/10; overflow: hidden; }
 .loc-other__img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
 .loc-other:hover .loc-other__img img { transform: scale(1.05); }
-.loc-other__body { padding: 18px 20px; }
+.loc-other__body { padding: 18px 46px 18px 20px; position: relative; }
 .loc-other__body h3 { font-size: 18px; color: var(--green); font-weight: 700; margin-bottom: 4px; }
 .loc-other__place { font-size: 13px; color: var(--gray); }
+.loc-other__go { position: absolute; right: 18px; top: 50%; transform: translateY(-50%) translateX(-6px); opacity: 0; color: var(--pink); font-size: 20px; font-weight: 700; transition: opacity .25s, transform .25s; }
+.loc-other:hover .loc-other__go { opacity: 1; transform: translateY(-50%) translateX(0); }
 
 .loc__notfound { text-align: center; padding: 120px 0; }
 .loc__notfound h1 { color: var(--green); margin-bottom: 12px; }
 .loc__notfound p { color: var(--gray); margin-bottom: 24px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .loc-hero__bg { animation: none; transform: none; }
+}
 
 /* ---------- responsive ---------- */
 @media (max-width: 991px) {
