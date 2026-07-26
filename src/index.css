@@ -35,8 +35,8 @@ p { margin: 0; }
 
 /* ---------- logo ---------- */
 .logo { display: inline-flex; align-items: center; }
-.logo__img { height: 58px; width: auto; display: block; }
-.logo--light .logo__img { height: 60px; }
+.logo__img { height: clamp(56px, 6vw, 82px); width: auto; display: block; }
+.logo--light .logo__img { height: 82px; }
 
 /* ---------- header ---------- */
 .header { position: sticky; top: 0; z-index: 1000; background: #fff; border-bottom: 1px solid var(--line); }
